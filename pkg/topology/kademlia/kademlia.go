@@ -320,7 +320,7 @@ func (k *Kad) connectBalanced(wg *sync.WaitGroup, peerConnChan chan<- *peerConnI
 	}
 }
 
-// connectNeighbourhoodOffset attempts to connect to the neighbours between depth of range (depth, depth + offset)
+// connectNeighbourhoodOffset attempts to connect to the neighbours between po of range [depth, depth + offset]
 func (k *Kad) connectNeighbourhoodOffset(wg *sync.WaitGroup, peerConnChan chan<- *peerConnInfo, offsetBin uint8) {
 
 	sent := 0
@@ -329,7 +329,7 @@ func (k *Kad) connectNeighbourhoodOffset(wg *sync.WaitGroup, peerConnChan chan<-
 	_ = k.knownPeers.EachBinRev(func(addr swarm.Address, po uint8) (bool, bool, error) {
 		depth := k.NeighborhoodDepth()
 
-		// restrict po to the range of (depth, depth + offset)
+		// restrict po to the range of [depth, depth + offset]
 		if po < depth || po > depth+offsetBin {
 			return false, true, nil
 		}
