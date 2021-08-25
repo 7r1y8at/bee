@@ -305,15 +305,14 @@ func (k *Kad) connectBalanced(wg *sync.WaitGroup, peerConnChan chan<- *peerConnI
 				continue
 			}
 
+			po := swarm.Proximity(k.base.Bytes(), closestKnownPeer.Bytes())
+
 			select {
 			case <-k.quit:
 				return
 			default:
 				wg.Add(1)
-				peerConnChan <- &peerConnInfo{
-					po:   swarm.Proximity(k.base.Bytes(), closestKnownPeer.Bytes()),
-					addr: closestKnownPeer,
-				}
+				peerConnChan <- &peerConnInfo{po: po, addr: closestKnownPeer}
 			}
 			break
 		}
@@ -353,10 +352,7 @@ func (k *Kad) connectNeighbourhoodOffset(wg *sync.WaitGroup, peerConnChan chan<-
 			return true, false, nil
 		default:
 			wg.Add(1)
-			peerConnChan <- &peerConnInfo{
-				po:   po,
-				addr: addr,
-			}
+			peerConnChan <- &peerConnInfo{po: po, addr: addr}
 			sent++
 		}
 
