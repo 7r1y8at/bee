@@ -255,10 +255,20 @@ func (k *Kad) connectBalanced(wg *sync.WaitGroup, peerConnChan chan<- *peerConnI
 		return false
 	}
 
+	depth := k.NeighborhoodDepth()
+
 	for i := range k.commonBinPrefixes {
-		if i >= int(k.NeighborhoodDepth()) {
+
+		binPeersLength := k.knownPeers.BinPeersLength(uint8(i))
+
+		// balancer should skip on bins where neighborhood connector would connect to peers anyway
+		// and there are not enough peers in known addresses to properly balance the bin
+		if i >= int(depth) && binPeersLength < len(k.commonBinPrefixes[i]) {
 			continue
 		}
+
+		binPeers := k.knownPeers.BinPeers(uint8(i))
+
 		for j := range k.commonBinPrefixes[i] {
 			pseudoAddr := k.commonBinPrefixes[i][j]
 
@@ -277,7 +287,7 @@ func (k *Kad) connectBalanced(wg *sync.WaitGroup, peerConnChan chan<- *peerConnI
 			}
 
 			// Connect to closest known peer which we haven't tried connecting to recently.
-			closestKnownPeer, err := closestPeer(k.knownPeers, pseudoAddr, skipPeers)
+			closestKnownPeer, err := closestPeerInSlice(binPeers, pseudoAddr, skipPeers)
 			if err != nil {
 				if errors.Is(err, topology.ErrNotFound) {
 					break
