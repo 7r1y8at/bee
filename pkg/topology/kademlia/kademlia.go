@@ -328,9 +328,13 @@ func (k *Kad) connectNeighbourhoodOffset(wg *sync.WaitGroup, peerConnChan chan<-
 	_ = k.knownPeers.EachBinRev(func(addr swarm.Address, po uint8) (bool, bool, error) {
 		depth := k.NeighborhoodDepth()
 
-		// restrict po to the range of [depth, depth + offset]
-		if po < depth || po > depth+offsetBin {
+		// po must be in neighborhood
+		if po < depth {
 			return false, true, nil
+		}
+		// po must not exceed offset
+		if po > depth+offsetBin {
+			return true, false, nil
 		}
 
 		if po != currentPo {
@@ -567,11 +571,12 @@ func (k *Kad) pruneOversaturatedBins(depth uint8) {
 			return
 		}
 
-		binPeers := k.connectedPeers.BinPeers(uint8(i))
-		binPeersCount := len(binPeers)
-		if len(binPeers) < overSaturationPeers {
+		binPeersCount := k.connectedPeers.BinPeersLength(uint8(i))
+		if binPeersCount < overSaturationPeers {
 			continue
 		}
+
+		binPeers := k.connectedPeers.BinPeers(uint8(i))
 
 		peersToRemove := binPeersCount - overSaturationPeers
 
