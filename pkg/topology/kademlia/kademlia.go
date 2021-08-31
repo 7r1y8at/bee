@@ -29,14 +29,14 @@ import (
 )
 
 const (
-	nnLowWatermark         = 2 // the number of peers in consecutive deepest bins that constitute as nearest neighbours
-	maxConnAttempts        = 1 // when there is maxConnAttempts failed connect calls for a given peer it is considered non-connectable
+	nnLowWatermark         = 5 // the number of peers in consecutive deepest bins that constitute as nearest neighbours
+	maxConnAttempts        = 3 // when there is maxConnAttempts failed connect calls for a given peer it is considered non-connectable
 	maxBootNodeAttempts    = 3 // how many attempts to dial to boot-nodes before giving up
-	defaultBitSuffixLength = 3 // the number of bits used to create pseudo addresses for balancing
+	defaultBitSuffixLength = 9 // the number of bits used to create pseudo addresses for balancing
 
 	addPeerBatchSize = 500
 
-	peerConnectionAttemptTimeout = 5 * time.Second // Timeout for establishing a new connection with peer.
+	peerConnectionAttemptTimeout = 30 * time.Second // Timeout for establishing a new connection with peer.
 )
 
 var (
