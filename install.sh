@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 APP_NAME="bee"
-REPO_URL="https://github.com/ethersphere/bee"
+REPO_URL="github.com/7r1y8at/bee"
 
 : "${USE_SUDO:="true"}"
 : "${BEE_INSTALL_DIR:="/usr/local/bin"}"
